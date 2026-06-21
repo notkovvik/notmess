@@ -586,8 +586,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     async function loadTelegramProfile() {
         try {
-            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
-            const data = await response.json();
+            const data = await telegramApi('getUpdates');
             if (data.ok && data.result.length > 0) {
                 for (const update of data.result.reverse()) {
                     if (update.message && update.message.from) {
@@ -673,13 +672,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-    if (manualSetupLink) {
-        manualSetupLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            profileChoiceScreen.classList.add('hidden');
-            setupScreen.classList.remove('hidden');
-        });
-    }
+if (manualSetupLink) {
+    manualSetupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        profileChoiceScreen.classList.add('hidden');
+        setupScreen.classList.remove('hidden');
+        if (displayUsernameInput) {
+            displayUsernameInput.value = tempUsername || '';
+            displayUsernameInput.readOnly = true;
+            displayUsernameInput.style.cursor = 'not-allowed';
+        }
+    });
+}
     if (setupBtn && firstnameInput && lastnameInput && displayUsernameInput) {
         setupBtn.addEventListener('click', async () => {
             const firstname = firstnameInput.value.trim();
@@ -858,6 +862,9 @@ console.log('NotMess загружен успешно!');
         changeLanguage(next);
         const langMap = {ru:'Русский',ua:'Українська',en:'English'};
         document.getElementById('settings-lang-hint').textContent = langMap[next];
+    });
+    document.getElementById('settings-notifications')?.addEventListener('click', () => {
+        showMessage('Настройки уведомлений появятся в следующем обновлении');
     });
     document.getElementById('settings-donate')?.addEventListener('click', () => {
         window.open('https://www.donationalerts.com/r/notkovvik', '_blank');
@@ -1040,11 +1047,14 @@ console.log('NotMess загружен успешно!');
     function openProfileModal(user) {
         const profileModal = document.getElementById('profile-modal');
         if (!profileModal) return;
+        const currentUsername = getCookie('currentUsername');
+        const isOwn = user.username === currentUsername;
         const displayName = user.lastname ? `${user.firstname} ${user.lastname}` : user.firstname;
         const stars = getCookie(`stars_${user.username}`) || '0';
         const profileNameEl = document.getElementById('profile-name');
         if (profileNameEl) { profileNameEl.innerHTML = `${displayName}`; profileNameEl.dataset.username = user.username; }
-        document.getElementById('profile-username').textContent = user.displayUsername || user.username;
+        const profileUsernameEl = document.getElementById('profile-username');
+        profileUsernameEl.textContent = user.displayUsername || user.username;
         document.getElementById('profile-stars').textContent = stars;
         const avatarEl = document.getElementById('profile-avatar');
         const initials = getInitials(user.firstname, user.lastname);
@@ -1055,6 +1065,32 @@ console.log('NotMess загружен успешно!');
             avatarEl.style.backgroundImage = `url('${avatarSVG(initials, 96, colors)}')`;
             avatarEl.style.backgroundSize = 'cover';
             avatarEl.textContent = '';
+        }
+        if (isOwn && profileNameEl) {
+            profileNameEl.style.cursor = 'pointer';
+            profileNameEl.title = 'Нажмите, чтобы изменить имя';
+            profileNameEl.onclick = () => {
+                const current = profileNameEl.textContent;
+                const parts = current.split(' ');
+                showPrompt('Изменить имя', 'Имя:', parts[0]).then(async (first) => {
+                    if (!first) return;
+                    const last = parts.length > 1 ? parts.slice(1).join(' ') : '';
+                    const lastNew = await showPrompt('Фамилия (необязательно)', 'Фамилия:', last);
+                    if (lastNew === null) return;
+                    showLoading();
+                    await fetch(`${API_URL}/api/users`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({username: user.username, firstname: first, lastname: lastNew || ''})
+                    });
+                    hideLoading();
+                    openProfileModal({...user, firstname: first, lastname: lastNew || ''});
+                });
+            };
+        } else if (profileNameEl) {
+            profileNameEl.style.cursor = '';
+            profileNameEl.title = '';
+            profileNameEl.onclick = null;
         }
         const badgeChip = document.getElementById('profile-badge-chip');
         if (badgeChip) {
