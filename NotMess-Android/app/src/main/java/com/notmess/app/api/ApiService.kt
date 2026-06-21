@@ -73,10 +73,34 @@ interface ApiService {
                 .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
                 .hostnameVerifier { _, _ -> true }
                 .build()
+            val gson = com.google.gson.GsonBuilder()
+                .registerTypeAdapter(Boolean::class.java, object : com.google.gson.JsonDeserializer<Boolean> {
+                    override fun deserialize(json: com.google.gson.JsonElement, type: java.lang.reflect.Type, ctx: com.google.gson.JsonDeserializationContext): Boolean {
+                        if (json.isJsonPrimitive) {
+                            val p = json.asJsonPrimitive
+                            if (p.isBoolean) return p.asBoolean
+                            if (p.isNumber) return p.asInt != 0
+                            if (p.isString) return p.asString == "1" || p.asString.lowercase() == "true"
+                        }
+                        return false
+                    }
+                })
+                .registerTypeAdapter(java.lang.Boolean::class.java, object : com.google.gson.JsonDeserializer<Boolean> {
+                    override fun deserialize(json: com.google.gson.JsonElement, type: java.lang.reflect.Type, ctx: com.google.gson.JsonDeserializationContext): Boolean {
+                        if (json.isJsonPrimitive) {
+                            val p = json.asJsonPrimitive
+                            if (p.isBoolean) return p.asBoolean
+                            if (p.isNumber) return p.asInt != 0
+                            if (p.isString) return p.asString == "1" || p.asString.lowercase() == "true"
+                        }
+                        return false
+                    }
+                })
+                .create()
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
                 .create(ApiService::class.java)
         }

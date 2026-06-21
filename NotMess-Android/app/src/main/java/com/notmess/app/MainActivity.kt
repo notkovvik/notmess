@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                 }.toMutableList()
                 (recycler.adapter as ChatAdapter).update(allChats)
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Ошибка загрузки: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                     openChat(chat)
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Ошибка", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
