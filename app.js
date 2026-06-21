@@ -402,13 +402,8 @@ async function sendCodeToTelegram(username, code, chatId) {
         return false;
     }
 }
-async function runChallenge() {
-    const challengeScreen = document.getElementById('challenge-screen');
-    if (challengeScreen) challengeScreen.classList.add('hidden');
-}
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM загружен, инициализация...');
-    await runChallenge();
+    console.log('NotMess инициализация...');
     const authScreen = document.getElementById('auth-screen');
     const profileChoiceScreen = document.getElementById('profile-choice-screen');
     const setupScreen = document.getElementById('setup-screen');

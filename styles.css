@@ -51,22 +51,6 @@ html, body {
 input, textarea { -webkit-user-select: text; user-select: text; }
 ::selection { background: var(--accent); color: #fff; }
 .hidden { display: none !important; }
-#challenge-screen {
-    position: fixed; inset: 0; z-index: 9999;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg);
-}
-.challenge-content { text-align: center; }
-.challenge-spinner {
-    width: 36px; height: 36px; margin: 0 auto 16px;
-    border: 3px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin .8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.challenge-content h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
-.challenge-content p { color: var(--text2); font-size: 13px; }
-.challenge-progress { width: 180px; height: 3px; background: var(--border); border-radius: 2px; margin: 16px auto 0; overflow: hidden; }
-.challenge-progress-bar { height: 100%; background: var(--accent); width: 0; border-radius: 2px; transition: width 3s ease; }
 .auth-screen {
     position: fixed; inset: 0; z-index: 100;
     display: flex; align-items: center; justify-content: center;
