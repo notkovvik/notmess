@@ -4,7 +4,7 @@ const API_URL = window.location.origin;
 function setCookie(name, value, days = 365) {
     const d = new Date();
     d.setTime(d.getTime() + days * 864e5);
-    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax;Secure';
+    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
 }
 function getCookie(name) {
     return document.cookie.split('; ').reduce((r, c) => {
@@ -1468,8 +1468,10 @@ async function openChat(chatId) {
     if (callBtn) callBtn.classList.toggle('hidden', !!chat.isChannel);
     if (videoCallBtn) videoCallBtn.classList.toggle('hidden', !!chat.isChannel);
     if (window.pollingInterval) clearInterval(window.pollingInterval);
+    const currentUserForPolling = currentUser;
     window.pollingInterval = setInterval(async () => {
         if (!window.currentChatId) return;
+        try {
         const resp = await fetch(`${API_URL}/api/messages/${window.currentChatId}`);
         const msgs = await resp.json();
         const container = document.getElementById('messages');
@@ -1479,10 +1481,9 @@ async function openChat(chatId) {
         const lastId = lastMsg ? parseInt(lastMsg.dataset.messageId) : 0;
         const newMsgs = msgs.filter(m => m.id > lastId);
         if (newMsgs.length > 0) {
-            const cur = await getCurrentUser();
             for (const msg of newMsgs) {
                 if (container.querySelector(`[data-message-id="${msg.id}"]`)) continue;
-                const isOwn = msg.sender === cur.username;
+                const isOwn = msg.sender === currentUserForPolling.username;
                 const html = renderMessageHTML(msg, isOwn);
                 const temp = document.createElement('div');
                 temp.innerHTML = html;
@@ -1496,7 +1497,9 @@ async function openChat(chatId) {
                 }
             }
             container.scrollTop = container.scrollHeight;
+            loadChatsAndUsers();
         }
+        } catch(e) {}
     }, 1000);
     if (window.onlineInterval) clearInterval(window.onlineInterval);
     window.onlineInterval = setInterval(async () => {
