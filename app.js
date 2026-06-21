@@ -898,6 +898,29 @@ console.log('NotMess загружен успешно!');
     document.getElementById('settings-donate')?.addEventListener('click', () => {
         window.open('https://www.donationalerts.com/r/notkovvik', '_blank');
     });
+    document.getElementById('settings-devices')?.addEventListener('click', async () => {
+        document.getElementById('settings-modal').classList.add('hidden');
+        try {
+            const ipRes = await fetch('https://ipapi.co/json/');
+            if (ipRes.ok) {
+                const ipData = await ipRes.json();
+                document.getElementById('device-ip').textContent = ipData.ip || '?';
+                document.getElementById('device-city').textContent = [ipData.city, ipData.region, ipData.country_name].filter(Boolean).join(', ') || '?';
+            }
+        } catch(e) {}
+        document.getElementById('device-name').textContent = navigator.userAgent.replace(/Android\s[\d.]+;\s|Linux\s|AppleWebKit\/[\d.]+|Chrome\/[\d.]+|Safari\/[\d.]+|Mobile|Build\/[\d.]+/g, '').trim() || 'Браузер';
+        document.getElementById('devices-modal').classList.remove('hidden');
+    });
+    document.getElementById('device-clear')?.addEventListener('click', async () => {
+        const ok = await showConfirm('Очистить устройства', 'Завершить все другие сеансы?');
+        if (ok) {
+            deleteCookie('currentUsername');
+            deleteCookie('e2e_pubkey');
+            document.getElementById('devices-modal').classList.add('hidden');
+            showMessage('✅ Все сеансы завершены');
+            setTimeout(() => location.reload(), 1500);
+        }
+    });
     if (menuDevices) {
         menuDevices.addEventListener('click', () => {
             menuModal.classList.add('hidden');

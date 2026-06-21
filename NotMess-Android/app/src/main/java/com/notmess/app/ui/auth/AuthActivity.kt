@@ -48,7 +48,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun sendCode() {
-        val username = usernameInput.text.toString().trim().lowercase()
+        val username = usernameInput.text.toString().trim().lowercase().removePrefix("@")
         if (username.isEmpty()) { Toast.makeText(this, "Введите username", Toast.LENGTH_SHORT).show(); return }
 
         authBtn.isEnabled = false
