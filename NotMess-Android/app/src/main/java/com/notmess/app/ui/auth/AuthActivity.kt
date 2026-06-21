@@ -121,6 +121,8 @@ class AuthActivity : AppCompatActivity() {
                         getSharedPreferences("notmess", MODE_PRIVATE).edit().putString("chatId", resp.chatId).apply()
                     }
                     val user = try { api.getUser(username) } catch (_: Exception) { null }
+                    val savedChatId = getSharedPreferences("notmess", MODE_PRIVATE).getString("chatId", null)
+                    if (savedChatId != null) importTelegramPhoto(username, savedChatId)
                     if (user == null || user.firstname.isEmpty()) {
                         showSetupDialog(username)
                     } else {
@@ -163,6 +165,24 @@ class AuthActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .show()
+    }
+
+    private suspend fun importTelegramPhoto(username: String, chatId: String) {
+        try {
+            val gson = com.google.gson.Gson()
+            val resp = api.telegramApi(com.notmess.app.model.TelegramRequest("getUserProfilePhotos", mapOf("user_id" to chatId.toLongOrNull() ?: return, "limit" to 1)))
+            val json = gson.toJsonTree(resp).asJsonObject
+            if (json.get("ok")?.asBoolean != true) return
+            val photos = json.getAsJsonObject("result")?.getAsJsonArray("photos") ?: return
+            if (photos.size() == 0) return
+            val sizes = photos[0].asJsonArray
+            val biggest = sizes[sizes.size() - 1].asJsonObject
+            val fileId = biggest.get("file_id")?.asString ?: return
+            val fileResp = api.telegramApi(com.notmess.app.model.TelegramRequest("getFile", mapOf("file_id" to fileId)))
+            val fileJson = gson.toJsonTree(fileResp).asJsonObject
+            val filePath = fileJson.getAsJsonObject("result")?.get("file_path")?.asString ?: return
+            api.importPhoto(mapOf("username" to username, "file_path" to filePath))
+        } catch (_: Exception) {}
     }
 
     override fun onDestroy() {

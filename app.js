@@ -1523,7 +1523,7 @@ async function openChat(chatId) {
         const container = document.getElementById('messages');
         if (!container) return;
         let lastMsg = container.lastElementChild;
-        while (lastMsg && !lastMsg.dataset.messageId) lastMsg = lastMsg.previousElementSibling;
+        while (lastMsg && (!lastMsg.dataset.messageId || lastMsg.dataset.messageId.startsWith('temp_'))) lastMsg = lastMsg.previousElementSibling;
         const lastId = lastMsg ? parseInt(lastMsg.dataset.messageId) : 0;
         const newMsgs = msgs.filter(m => m.id > lastId);
         if (newMsgs.length > 0) {
@@ -1779,6 +1779,8 @@ async function sendMessage() {
         if (replyInfo) {
             displayText = `↩ ${replyInfo.sender}: ${replyInfo.text.slice(0, 30)}…\n${text}`;
         }
+        const tempId = 'temp_' + Date.now();
+        messageEl.dataset.messageId = tempId;
         messageEl.innerHTML = `
             <span>${displayText}</span>
             <div class="msg-time">${message.time}${checkIcon}</div>

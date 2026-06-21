@@ -56,6 +56,9 @@ interface ApiService {
     @POST("api/telegram")
     suspend fun telegramApi(@Body body: TelegramRequest): TelegramResponse
 
+    @POST("api/users/photo")
+    suspend fun importPhoto(@Body body: Map<String, String>): ServerResponse
+
     companion object {
         const val BASE_URL = "https://web.notmess.ru/"
 
