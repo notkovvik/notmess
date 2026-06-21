@@ -6,6 +6,9 @@ RewriteRule ^(.*)$ engine/api.php [QSA,L]
 RewriteCond %{REQUEST_URI} ^/uploads/
 RewriteRule ^uploads/(.*)$ uploads/$1 [L]
 
+RewriteCond %{HTTP_HOST} ^web\.notmess\.ru [NC]
+RewriteRule ^$ messenger.html [L]
+
 RewriteRule ^messenger/?$ messenger.html [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
