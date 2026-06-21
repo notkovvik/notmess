@@ -279,6 +279,8 @@ function showConfirm(title, text) {
         ]);
     });
 }
+function showLoading() { document.getElementById('loading-overlay')?.remove(); const el = document.createElement('div'); el.id = 'loading-overlay'; el.className = 'loading-overlay'; el.innerHTML = '<div class="loading-spinner"></div>'; document.body.appendChild(el); }
+function hideLoading() { document.getElementById('loading-overlay')?.remove(); }
 function showPrompt(title, text, placeholder) {
     return new Promise(resolve => {
         showDialog(title, text, [
@@ -919,11 +921,13 @@ console.log('NotMess загружен успешно!');
         if (!target) return;
         const amount = await showPrompt('Количество', 'Количество звезд:', '10');
         if (!amount || isNaN(amount)) return;
+        showLoading();
         await fetch(`${API_URL}/api/stars`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username: target, amount: parseInt(amount)})
         });
+        hideLoading();
         showMessage(`⭐ Выдано ${amount} звезд ${target}`);
         document.getElementById('admin-modal').classList.add('hidden');
     });
@@ -944,18 +948,22 @@ console.log('NotMess загружен успешно!');
             showMessage('Недопустимый тип. Используйте: creator, team, supporter, verified');
             return;
         }
+        showLoading();
         await fetch(`${API_URL}/api/users/badge`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username: target, badge: type})
         });
+        hideLoading();
         showMessage(`🏅 Бейдж "${type}" выдан ${target}`);
         document.getElementById('admin-modal').classList.add('hidden');
     });
     document.getElementById('admin-stats')?.addEventListener('click', async () => {
+        showLoading();
         const res = await fetch(`${API_URL}/api/messages/stats`);
         const stats = await res.json();
-        showMessage(`📊 Статистика сервера:\n\n👥 Пользователей: ${stats.users}\n💬 Чатов: ${stats.chats}\n✉️ Сообщений: ${stats.messages}`);
+        hideLoading();
+        showMessage(`📊 Статистика:\n\n👥 Пользователей: ${stats.users}\n💬 Чатов: ${stats.chats}\n✉️ Сообщений: ${stats.messages}`);
         document.getElementById('admin-modal').classList.add('hidden');
     });
     if (menuTheme) {
