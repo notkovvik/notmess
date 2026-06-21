@@ -54,11 +54,30 @@ class AuthActivity : AppCompatActivity() {
         authBtn.isEnabled = false
         scope.launch {
             try {
-                val user = try { api.getUser("@" + username) } catch (_: Exception) { null }
+                var user = try { api.getUser("@" + username) } catch (_: Exception) { null }
                 var chatId = user?.chatId
                 if (chatId == null) {
-                    val updates = api.telegramApi(TelegramRequest("getUpdates", emptyMap()))
-                    if (updates.ok) {
+                    val updatesResp = api.telegramApi(TelegramRequest("getUpdates", mapOf("allowed_updates" to listOf("message"))))
+                    if (updatesResp.ok) {
+                        try {
+                            val gson = com.google.gson.Gson()
+                            val jsonStr = com.google.gson.GsonBuilder().create().toJson(updatesResp)
+                            val jsonTree = com.google.gson.JsonParser.parseString(jsonStr).asJsonObject
+                            val result = jsonTree.getAsJsonArray("result")
+                            for (item in result) {
+                                val msg = item.asJsonObject.getAsJsonObject("message")
+                                val from = msg?.getAsJsonObject("from")
+                                val uname = from?.get("username")?.asString?.lowercase()
+                                if (uname == username) {
+                                    chatId = from.get("id").asString
+                                    api.sendAuthCode(AuthCodeRequest("@" + username, "", chatId))
+                                    user = User(username = "@$username", chatId = chatId)
+                                    break
+                                }
+                            }
+                        } catch (_: Exception) {}
+                    }
+                    if (chatId == null) {
                         Toast.makeText(this@AuthActivity, "Напишите боту @notmess_autobot любое сообщение и попробуйте снова", Toast.LENGTH_LONG).show()
                         authBtn.isEnabled = true
                         return@launch
@@ -98,6 +117,9 @@ class AuthActivity : AppCompatActivity() {
                 val resp = api.verifyAuthCode(AuthVerifyRequest(username, code))
                 if (resp.valid) {
                     getSharedPreferences("notmess", MODE_PRIVATE).edit().putString("username", username).apply()
+                    if (resp.chatId != null) {
+                        getSharedPreferences("notmess", MODE_PRIVATE).edit().putString("chatId", resp.chatId).apply()
+                    }
                     val user = try { api.getUser(username) } catch (_: Exception) { null }
                     if (user == null || user.firstname.isEmpty()) {
                         showSetupDialog(username)
