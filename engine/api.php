@@ -182,13 +182,12 @@ if (preg_match('#^/api/messages/([^/]+)$#', $path, $matches) && $request_method 
 
 if ($path === '/api/messages' && $request_method === 'POST') {
     $data = getJsonInput();
-    $stmt = $pdo->prepare('INSERT INTO messages (chatId, text, time, sender, timestamp, fileUrl, fileType, fileName) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $pdo->prepare('INSERT INTO messages (chatId, text, time, sender, timestamp, fileUrl, fileType, fileName) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?)');
     $stmt->execute([
         $data['chatId'],
         $data['text'] ?? '',
         $data['time'],
         $data['sender'],
-        $data['timestamp'],
         $data['fileUrl'] ?? null,
         $data['fileType'] ?? null,
         $data['fileName'] ?? null
@@ -226,7 +225,7 @@ if ($path === '/api/upload' && $request_method === 'POST') {
     
     $uploadDir = __DIR__ . '/../uploads/';
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        @mkdir($uploadDir, 0777, true);
     }
     
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
