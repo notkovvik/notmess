@@ -14,9 +14,29 @@ function getJsonInput() {
     return json_decode(file_get_contents('php://input'), true);
 }
 
+function telegramApi($method, $params = []) {
+    $url = 'https://api.telegram.org/bot' . BOT_TOKEN . '/' . $method;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($result, true);
+}
+
 $request_uri = $_SERVER['REQUEST_URI'];
 $request_method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($request_uri, PHP_URL_PATH);
+
+if ($path === '/api/telegram' && $request_method === 'POST') {
+    $data = getJsonInput();
+    $result = telegramApi($data['method'], $data['params'] ?? []);
+    echo json_encode($result);
+    exit;
+}
 
 if ($path === '/api/auth/code' && $request_method === 'POST') {
     $data = getJsonInput();

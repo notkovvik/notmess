@@ -1,6 +1,5 @@
 
 console.log('NotMess загружается...');
-const TELEGRAM_BOT_TOKEN = '8509044251:AAGMDa95naHKVUIpzOxaPPkJ5V6Nxrefa84';
 const API_URL = window.location.origin;
 function setCookie(name, value, days = 365) {
     const d = new Date();
@@ -366,10 +365,17 @@ async function searchUsers(query) {
     const response = await fetch(`${API_URL}/api/users/search/${query}`);
     return response.json();
 }
+async function telegramApi(method, params = {}) {
+    const response = await fetch(`${API_URL}/api/telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ method, params })
+    });
+    return response.json();
+}
 async function getChatIdByUsername(username) {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
-        const data = await response.json();
+        const data = await telegramApi('getUpdates');
         if (data.ok && data.result.length > 0) {
             for (const update of data.result.reverse()) {
                 if (update.message && update.message.from) {
@@ -389,16 +395,7 @@ async function getChatIdByUsername(username) {
 async function sendCodeToTelegram(username, code, chatId) {
     const message = `🔐 Ваш код подтверждения для NotMess:\n\n<code>${code}</code>\n\n<i>Нажмите на код, чтобы скопировать</i>\n\nUsername: ${username}`;
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        });
-        const data = await response.json();
+        const data = await telegramApi('sendMessage', { chat_id: chatId, text: message, parse_mode: 'HTML' });
         return data.ok;
     } catch (error) {
         console.error('Ошибка отправки в Telegram:', error);
@@ -613,15 +610,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 userId: user.id
                             };
                             try {
-                                const photoResp = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUserProfilePhotos?user_id=${user.id}&limit=1`);
-                                const photoData = await photoResp.json();
+                                const photoData = await telegramApi('getUserProfilePhotos', { user_id: user.id, limit: 1 });
                                 if (photoData.ok && photoData.result.photos.length > 0) {
                                     const sizes = photoData.result.photos[0];
                                     const biggest = sizes[sizes.length - 1];
-                                    const fileResp = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getFile?file_id=${biggest.file_id}`);
-                                    const fileData = await fileResp.json();
+                                    const fileData = await telegramApi('getFile', { file_id: biggest.file_id });
                                     if (fileData.ok) {
-                                        window.telegramUserData.photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_BOT_TOKEN}/${fileData.result.file_path}`;
+                                        window.telegramUserData.photoUrl = `${API_URL}uploads/${fileData.result.file_id}`;
                                         if (tgAvatar) tgAvatar.style.backgroundImage = `url('${window.telegramUserData.photoUrl}')`;
                                     }
                                 }
@@ -1774,16 +1769,8 @@ async function sendMessageNotification(chatId, text, sender) {
         const otherUser = await getUserByUsername(otherUsername);
         if (otherUser && otherUser.chatId) {
             const senderName = sender.lastname ? `${sender.firstname} ${sender.lastname}` : sender.firstname;
-            const message = `💬 Новое сообщение от ${senderName}:\n\n"${text}"\n\n<a href="https://notmess.ru">Открыть NotMess</a>`;
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: otherUser.chatId,
-                    text: message,
-                    parse_mode: 'HTML'
-                })
-            });
+            const message = `💬 Новое сообщение от ${senderName}:\n\n"${text}"\n\n<a href="https://web.notmess.ru">Открыть NotMess</a>`;
+            await telegramApi('sendMessage', { chat_id: otherUser.chatId, text: message, parse_mode: 'HTML' });
         }
     } catch (error) {
         console.error('Ошибка отправки уведомления:', error);
