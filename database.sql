@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `displayUsername` varchar(255) NOT NULL,
   `chatId` varchar(255) DEFAULT NULL,
   `badge` varchar(50) DEFAULT NULL,
+  `avatarUrl` varchar(500) DEFAULT NULL,
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`username`),
   UNIQUE KEY `displayUsername` (`displayUsername`)

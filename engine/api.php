@@ -38,6 +38,26 @@ if ($path === '/api/telegram' && $request_method === 'POST') {
     exit;
 }
 
+if ($path === '/api/telegram-file' && $request_method === 'POST') {
+    $data = getJsonInput();
+    $fileUrl = 'https://api.telegram.org/file/bot' . BOT_TOKEN . '/' . $data['file_path'];
+    $ch = curl_init($fileUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $fileContent = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+    curl_close($ch);
+    if ($httpCode !== 200) {
+        http_response_code(500);
+        echo json_encode(['error' => 'File download failed']);
+        exit;
+    }
+    header('Content-Type: ' . ($contentType ?: 'image/jpeg'));
+    echo $fileContent;
+    exit;
+}
+
 if ($path === '/api/auth/code' && $request_method === 'POST') {
     $data = getJsonInput();
     $stmt = $pdo->prepare('INSERT INTO auth_codes (username, code, chatId, createdAt) VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE code = ?, chatId = ?, createdAt = NOW()');
@@ -290,6 +310,35 @@ if (preg_match('#^/api/favorites/(\d+)$#', $path, $matches) && $request_method =
     $stmt = $pdo->prepare('DELETE FROM favorites WHERE id = ?');
     $stmt->execute([$favoriteId]);
     echo json_encode(['success' => true]);
+    exit;
+}
+
+if ($path === '/api/users/photo' && $request_method === 'POST') {
+    $data = getJsonInput();
+    if (!isset($data['username']) || !isset($data['file_path'])) {
+        echo json_encode(['error' => 'Missing fields']);
+        exit;
+    }
+    $fileUrl = 'https://api.telegram.org/file/bot' . BOT_TOKEN . '/' . $data['file_path'];
+    $ch = curl_init($fileUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $fileContent = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($httpCode !== 200) {
+        echo json_encode(['error' => 'Download failed']);
+        exit;
+    }
+    $uploadDir = __DIR__ . '/../uploads/';
+    if (!is_dir($uploadDir)) @mkdir($uploadDir, 0777, true);
+    $ext = pathinfo($data['file_path'], PATHINFO_EXTENSION) ?: 'jpg';
+    $uniqueName = 'avatar_' . uniqid() . '.' . $ext;
+    file_put_contents($uploadDir . $uniqueName, $fileContent);
+    $avatarUrl = '/uploads/' . $uniqueName;
+    $stmt = $pdo->prepare('UPDATE users SET avatarUrl = ? WHERE username = ?');
+    $stmt->execute([$avatarUrl, $data['username']]);
+    echo json_encode(['success' => true, 'avatarUrl' => $avatarUrl]);
     exit;
 }
 

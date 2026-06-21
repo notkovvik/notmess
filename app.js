@@ -613,14 +613,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                             };
                             try {
                                 const photoData = await telegramApi('getUserProfilePhotos', { user_id: user.id, limit: 1 });
-                                if (photoData.ok && photoData.result.photos.length > 0) {
-                                    const sizes = photoData.result.photos[0];
-                                    const biggest = sizes[sizes.length - 1];
-                                    const fileData = await telegramApi('getFile', { file_id: biggest.file_id });
-                                    if (fileData.ok) {
-                                        window.telegramUserData.photoUrl = `${API_URL}uploads/${fileData.result.file_id}`;
-                                        if (tgAvatar) tgAvatar.style.backgroundImage = `url('${window.telegramUserData.photoUrl}')`;
-                                    }
+                                    if (photoData.ok && photoData.result.photos.length > 0) {
+                                        const sizes = photoData.result.photos[0];
+                                        const biggest = sizes[sizes.length - 1];
+                                        const fileData = await telegramApi('getFile', { file_id: biggest.file_id });
+                                        if (fileData.ok && fileData.result.file_path) {
+                                            try {
+                                                const photoResp = await fetch(`${API_URL}/api/telegram-file`, {
+                                                    method: 'POST',
+                                                    headers: {'Content-Type': 'application/json'},
+                                                    body: JSON.stringify({file_path: fileData.result.file_path})
+                                                });
+                                                if (photoResp.ok) {
+                                                    const blob = await photoResp.blob();
+                                                    const dataUrl = URL.createObjectURL(blob);
+                                                    window.telegramUserData.photoUrl = dataUrl;
+                                                    window.telegramUserData.blob = blob;
+                                                    if (tgAvatar) tgAvatar.style.backgroundImage = `url('${dataUrl}')`;
+                                                }
+                                            } catch(e) {
+                                                console.log('Не удалось загрузить фото');
+                                            }
+                                        }
                                 }
                             } catch (e) {
                                 console.log('Не удалось загрузить фото профиля');
@@ -656,13 +670,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     createdAt: new Date().toISOString()
                 };
                 await saveUser(fullUserData);
-                if (userData.photoUrl) {
+                if (userData.photoUrl && userData.userId) {
                     try {
-                        await fetch(`${API_URL}/api/users/avatar`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username: tempUsername, photoUrl: userData.photoUrl })
-                        });
+                        const photoData = await telegramApi('getUserProfilePhotos', { user_id: userData.userId, limit: 1 });
+                        if (photoData.ok && photoData.result.photos.length > 0) {
+                            const biggest = photoData.result.photos[0].slice(-1)[0];
+                            const fileData = await telegramApi('getFile', { file_id: biggest.file_id });
+                            if (fileData.ok && fileData.result.file_path) {
+                                const resp = await fetch(`${API_URL}/api/users/photo`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ username: tempUsername, file_path: fileData.result.file_path })
+                                });
+                                const result = await resp.json();
+                                console.log('Photo import:', result);
+                            }
+                        }
                     } catch (e) {
                         console.log('Не удалось сохранить фото');
                     }
