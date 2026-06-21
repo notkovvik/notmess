@@ -88,7 +88,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun verifyCode() {
-        val username = "@" + usernameInput.text.toString().trim().lowercase()
+        val username = "@" + usernameInput.text.toString().trim().lowercase().removePrefix("@")
         val code = codeInput.text.toString().trim()
         if (code.length != 5) { Toast.makeText(this, "Код — 5 цифр", Toast.LENGTH_SHORT).show(); return }
 
