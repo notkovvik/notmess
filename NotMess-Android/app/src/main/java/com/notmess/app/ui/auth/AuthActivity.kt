@@ -15,6 +15,8 @@ import com.notmess.app.NotMessApp
 import com.notmess.app.R
 import com.notmess.app.model.AuthCodeRequest
 import com.notmess.app.model.AuthVerifyRequest
+import com.notmess.app.model.TelegramRequest
+import com.notmess.app.model.TelegramResponse
 import com.notmess.app.model.User
 import kotlinx.coroutines.*
 
