@@ -1415,6 +1415,7 @@ async function openChat(chatId) {
             clearTimeout(pressTimer);
         }, { passive: true });
         addSwipeHandler(msgEl);
+    });
     setTimeout(() => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }, 100);
