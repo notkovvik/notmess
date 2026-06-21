@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotMess</title>
+    <link rel="icon" type="image/jpeg" href="logonotmess67.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #0e0e0e; color: #fff; min-height: 100vh;
+        }
+        a { color: inherit; text-decoration: none; }
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 24px; max-width: 800px; margin: 0 auto;
+        }
+        .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .logo img { width: 32px; height: 32px; border-radius: 50%; }
+        .header-btn {
+            background: #0088cc; color: #fff; padding: 8px 20px;
+            border-radius: 20px; font-size: 14px; font-weight: 600;
+        }
+        .header-btn:hover { background: #0077b3; }
+        .hero {
+            text-align: center; padding: 100px 24px 60px; max-width: 600px; margin: 0 auto;
+        }
+        .hero h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
+        .hero h1 span { color: #0088cc; }
+        .hero p { color: #999; font-size: 16px; line-height: 1.6; margin-bottom: 32px; }
+        .hero-btn {
+            display: inline-block; background: #0088cc; color: #fff;
+            padding: 14px 40px; border-radius: 30px; font-size: 16px; font-weight: 700;
+        }
+        .hero-btn:hover { background: #0077b3; }
+        .features {
+            max-width: 700px; margin: 0 auto; padding: 40px 24px 80px;
+        }
+        .feature {
+            display: flex; align-items: flex-start; gap: 16px;
+            padding: 16px 0; border-bottom: 1px solid #1f1f1f;
+        }
+        .feature:last-child { border-bottom: none; }
+        .feature-icon { font-size: 24px; width: 36px; text-align: center; flex-shrink: 0; }
+        .feature-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .feature-text p { font-size: 13px; color: #888; }
+        .footer {
+            text-align: center; padding: 32px 24px; border-top: 1px solid #1f1f1f;
+            color: #555; font-size: 13px; max-width: 700px; margin: 0 auto;
+        }
+        .footer a { color: #777; }
+        .footer a:hover { color: #fff; }
+        @media (max-width: 600px) {
+            .hero { padding: 60px 16px 40px; }
+            .hero h1 { font-size: 28px; }
+            .features { padding: 24px 16px 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><img src="logonotmess67.jpg" alt=""> NotMess</div>
+        <a class="header-btn" href="/messenger">Войти</a>
+    </div>
+    <div class="hero">
+        <h1>NotMess <span>—</span></h1>
+        <p>Простой и быстрый мессенджер. Авторизация через Telegram. Звонки, файлы, подарки и звёзды.</p>
+        <a class="hero-btn" href="/messenger">Открыть мессенджер</a>
+    </div>
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">💬</div>
+            <div class="feature-text">
+                <h3>Сообщения</h3>
+                <p>Мгновенная отправка, файлы до 50MB, избранное</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📞</div>
+            <div class="feature-text">
+                <h3>Звонки</h3>
+                <p>Голосовые и видеозвонки через WebRTC</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🎁</div>
+            <div class="feature-text">
+                <h3>Подарки и звёзды</h3>
+                <p>Покупайте подарки и ставьте звёзды пользователям</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-text">
+                <h3>Авторизация через Telegram</h3>
+                <p>Вход через бота @notmess_autobot</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <a href="/messenger">Мессенджер</a> — <a href="https://t.me/notmess_autobot">Telegram бот</a>
+    </div>
+</body>
+</html>
