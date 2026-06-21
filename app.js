@@ -4,7 +4,7 @@ const API_URL = window.location.origin;
 function setCookie(name, value, days = 365) {
     const d = new Date();
     d.setTime(d.getTime() + days * 864e5);
-    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax;Secure';
 }
 function getCookie(name) {
     return document.cookie.split('; ').reduce((r, c) => {
@@ -357,7 +357,13 @@ async function getUserByUsername(username) {
 async function getCurrentUser() {
     const username = getCookie('currentUsername');
     if (!username) return null;
-    return getUserByUsername(username);
+    try {
+        const user = await getUserByUsername(username);
+        if (user && user.username) return user;
+        return null;
+    } catch(e) {
+        return null;
+    }
 }
 async function getAllUsers() {
     const response = await fetch(`${API_URL}/api/users`);
