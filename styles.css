@@ -674,8 +674,15 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     .sidebar { width: 100%; min-width: 0; }
     .sidebar.closed { display: none; }
     .chat-window { width: 100%; }
+    .chat-window:not(.active) { display: none; }
     .back-btn { display: block; }
     .auth-container { padding: 24px 16px; }
     .auth-container h1 { font-size: 20px; }
     .auth-logo img { width: 72px; height: 72px; }
+    .chat-item { padding: 12px 14px; }
+    .chat-item-avatar { width: 44px; height: 44px; font-size: 14px; }
+    .folders { padding: 4px 12px 8px; }
+    .sidebar-header { padding: 10px 12px; }
+    .search-input { height: 30px; font-size: 12px; }
+    .empty-state img { width: 80px; height: 80px; }
 }

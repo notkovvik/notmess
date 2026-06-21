@@ -1346,6 +1346,7 @@ async function openChat(chatId) {
     }
     const emptyState = document.getElementById('empty-state');
     const chatContent = document.getElementById('chat-content');
+    document.querySelector('.chat-window')?.classList.add('active');
     if (emptyState) emptyState.classList.add('hidden');
     if (chatContent) chatContent.classList.remove('hidden');
     const chatNameHeader = document.getElementById('chat-name-header');
@@ -1675,6 +1676,7 @@ function initMessageHandlers() {
         newBackBtn.addEventListener('click', () => {
             const emptyState = document.getElementById('empty-state');
             const chatContent = document.getElementById('chat-content');
+            document.querySelector('.chat-window')?.classList.remove('active');
             if (emptyState) emptyState.classList.remove('hidden');
             if (chatContent) chatContent.classList.add('hidden');
             window.currentChatId = null;
