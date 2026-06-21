@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:id="@+id/chatHeader"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:background="@color/surface"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Назад" />
+
+        <TextView
+            android:id="@+id/chatAvatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_avatar" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/chatName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/chatStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text2" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messagesRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="16dp"
+            android:clipToPadding="false" />
+
+        <TextView
+            android:id="@+id/emptyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/text3"
+            android:text="Нет сообщений"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="4dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/attachBtn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_attach"
+                android:contentDescription="Прикрепить"
+                android:scaleType="center" />
+
+            <EditText
+                android:id="@+id/messageInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:textSize="15sp"
+                android:textColor="@color/text"
+                android:textColorHint="@color/text3"
+                android:hint="Написать сообщение..."
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/sendBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_send"
+            android:src="@drawable/ic_send"
+            android:contentDescription="Отправить"
+            android:scaleType="center" />
+
+    </LinearLayout>
+
+</LinearLayout>
