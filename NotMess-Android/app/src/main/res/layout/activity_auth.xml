@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@color/surface"
+                android:padding="32dp"
+                >
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textSize="22sp"
+                    android:textColor="@color/text"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Введите ваш Telegram username"
+                    android:textSize="13sp"
+                    android:textColor="@color/text2"
+                    android:layout_marginBottom="20dp" />
+
+                <EditText
+                    android:id="@+id/usernameInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_input"
+                    android:padding="14dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/text"
+                    android:textColorHint="@color/text3"
+                    android:hint="@username"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/codeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Мы отправили код в Telegram"
+                        android:textSize="13sp"
+                        android:textColor="@color/text2"
+                        android:layout_marginBottom="10dp" />
+
+                    <EditText
+                        android:id="@+id/codeInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_input"
+                        android:padding="14dp"
+                        android:textSize="18sp"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/text3"
+                        android:hint="Код"
+                        android:inputType="number"
+                        android:maxLength="5"
+                        android:letterSpacing="0.3"
+                        android:gravity="center"
+                        android:layout_marginBottom="10dp" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/authBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Далее"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/accent"
+                    android:textColor="@android:color/white"
+                    style="@style/Widget.Material3.Button" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>
