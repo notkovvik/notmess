@@ -919,8 +919,11 @@ console.log('NotMess загружен успешно!');
         if (!target) return;
         const amount = await showPrompt('Количество', 'Количество звезд:', '10');
         if (!amount || isNaN(amount)) return;
-        const current = parseInt(getCookie(`stars_${target}`) || '0');
-        setCookie(`stars_${target}`, (current + parseInt(amount)).toString());
+        await fetch(`${API_URL}/api/stars`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: target, amount: parseInt(amount)})
+        });
         showMessage(`⭐ Выдано ${amount} звезд ${target}`);
         document.getElementById('admin-modal').classList.add('hidden');
     });

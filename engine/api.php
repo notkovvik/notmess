@@ -294,6 +294,38 @@ if (preg_match('#^/api/favorites/(\d+)$#', $path, $matches) && $request_method =
     exit;
 }
 
+if ($path === '/api/users/badge' && $request_method === 'POST') {
+    $data = getJsonInput();
+    $stmt = $pdo->prepare('UPDATE users SET badge = ? WHERE username = ?');
+    $stmt->execute([$data['badge'], $data['username']]);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+if ($path === '/api/stars' && $request_method === 'POST') {
+    $data = getJsonInput();
+    $stmt = $pdo->prepare('INSERT INTO stars (username, amount) VALUES (?, ?) ON DUPLICATE KEY UPDATE amount = amount + ?');
+    $stmt->execute([$data['username'], $data['amount'], $data['amount']]);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+if (preg_match('#^/api/stars/([^/]+)$#', $path, $matches) && $request_method === 'GET') {
+    $stmt = $pdo->prepare('SELECT COALESCE(amount, 0) as stars FROM stars WHERE username = ?');
+    $stmt->execute([urldecode($matches[1])]);
+    $row = $stmt->fetch();
+    echo json_encode(['stars' => $row ? (int)$row['stars'] : 0]);
+    exit;
+}
+
+if ($path === '/api/messages/stats' && $request_method === 'GET') {
+    $users = $pdo->query('SELECT COUNT(*) as c FROM users')->fetch()['c'];
+    $chats = $pdo->query('SELECT COUNT(*) as c FROM chats')->fetch()['c'];
+    $msgs = $pdo->query('SELECT COUNT(*) as c FROM messages')->fetch()['c'];
+    echo json_encode(['users' => (int)$users, 'chats' => (int)$chats, 'messages' => (int)$msgs]);
+    exit;
+}
+
 http_response_code(404);
 echo json_encode(['error' => 'Not found']);
 ?>
