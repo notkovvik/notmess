@@ -1530,6 +1530,11 @@ async function openChat(chatId) {
         if (newMsgs.length > 0) {
             for (const msg of newMsgs) {
                 if (container.querySelector(`[data-message-id="${msg.id}"]`)) continue;
+                const tempEl = container.querySelector(`[data-message-id^="temp_"][data-sender="${msg.sender}"][data-time="${msg.time}"]`);
+                if (tempEl) {
+                    tempEl.dataset.messageId = msg.id;
+                    continue;
+                }
                 const isOwn = msg.sender === currentUserForPolling.username;
                 const html = renderMessageHTML(msg, isOwn);
                 const temp = document.createElement('div');
@@ -1782,6 +1787,8 @@ async function sendMessage() {
         }
         const tempId = 'temp_' + Date.now();
         messageEl.dataset.messageId = tempId;
+        messageEl.dataset.sender = currentUser.username;
+        messageEl.dataset.time = message.time;
         messageEl.innerHTML = `
             <span>${displayText}</span>
             <div class="msg-time">${message.time}${checkIcon}</div>
