@@ -1501,6 +1501,7 @@ async function openChat(chatId) {
         const isOwn = msg.sender === currentUser.username;
         return renderMessageHTML(msg, isOwn, index);
     }).join('');
+    window._maxMessageId = messages.reduce((max, m) => Math.max(max, m.id), 0);
     document.querySelectorAll('.message').forEach(msgEl => {
         let pressTimer;
         let touchStartX, touchStartY;
@@ -1552,16 +1553,14 @@ async function openChat(chatId) {
         const msgs = await resp.json();
         const container = document.getElementById('messages');
         if (!container) return;
-        let lastMsg = container.lastElementChild;
-        while (lastMsg && (!lastMsg.dataset.messageId || lastMsg.dataset.messageId.startsWith('temp_'))) lastMsg = lastMsg.previousElementSibling;
-        const lastId = lastMsg ? parseInt(lastMsg.dataset.messageId) : 0;
-        const newMsgs = msgs.filter(m => m.id > lastId);
+        const newMsgs = msgs.filter(m => m.id > window._maxMessageId);
         if (newMsgs.length > 0) {
             for (const msg of newMsgs) {
                 if (container.querySelector(`[data-message-id="${msg.id}"]`)) continue;
                 const tempEl = container.querySelector(`[data-message-id^="temp_"][data-sender="${msg.sender}"][data-time="${msg.time}"]`);
                 if (tempEl) {
                     tempEl.dataset.messageId = msg.id;
+                    if (msg.id > window._maxMessageId) window._maxMessageId = msg.id;
                     continue;
                 }
                 const isOwn = msg.sender === currentUserForPolling.username;
@@ -1576,6 +1575,7 @@ async function openChat(chatId) {
                     addSwipeHandler(el);
                     container.appendChild(el);
                 }
+                if (msg.id > window._maxMessageId) window._maxMessageId = msg.id;
             }
             container.scrollTop = container.scrollHeight;
             loadChatsAndUsers();
