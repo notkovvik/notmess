@@ -374,6 +374,50 @@ if ($path === '/api/messages/stats' && $request_method === 'GET') {
     exit;
 }
 
+if ($path === '/api/users/delete-code' && $request_method === 'POST') {
+    $data = getJsonInput();
+    $stmt = $pdo->prepare('SELECT chatId FROM users WHERE username = ?');
+    $stmt->execute([$data['username']]);
+    $user = $stmt->fetch();
+    if (!$user || !$user['chatId']) {
+        echo json_encode(['success' => false, 'error' => 'Пользователь не найден']);
+        exit;
+    }
+    $code = strval(rand(10000, 99999));
+    $stmt = $pdo->prepare('INSERT INTO auth_codes (username, code, chatId, createdAt) VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE code = ?, createdAt = NOW()');
+    $stmt->execute([$data['username'], $code, $user['chatId'], $code]);
+    telegramApi('sendMessage', [
+        'chat_id' => $user['chatId'],
+        'text' => "⚠️ Код подтверждения удаления аккаунта NotMess:\n\n<code>$code</code>\n\n<i>Никому не сообщайте этот код</i>",
+        'parse_mode' => 'HTML'
+    ]);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+if ($path === '/api/users/delete' && $request_method === 'POST') {
+    $data = getJsonInput();
+    $stmt = $pdo->prepare('SELECT * FROM auth_codes WHERE username = ? AND code = ?');
+    $stmt->execute([$data['username'], $data['code']]);
+    $row = $stmt->fetch();
+    if (!$row) {
+        echo json_encode(['success' => false, 'error' => 'Неверный код']);
+        exit;
+    }
+    $stmt = $pdo->prepare('DELETE FROM auth_codes WHERE username = ?');
+    $stmt->execute([$data['username']]);
+    $stmt = $pdo->prepare('DELETE FROM messages WHERE sender = ?');
+    $stmt->execute([$data['username']]);
+    $stmt = $pdo->prepare('DELETE FROM chats WHERE participant1 = ? OR participant2 = ?');
+    $stmt->execute([$data['username'], $data['username']]);
+    $stmt = $pdo->prepare('DELETE FROM favorites WHERE username = ?');
+    $stmt->execute([$data['username']]);
+    $stmt = $pdo->prepare('DELETE FROM users WHERE username = ?');
+    $stmt->execute([$data['username']]);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
 http_response_code(404);
 echo json_encode(['error' => 'Not found']);
 ?>

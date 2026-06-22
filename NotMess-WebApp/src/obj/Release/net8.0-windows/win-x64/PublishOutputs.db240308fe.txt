@@ -1,0 +1,5 @@
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\publish\x64\NotMess.exe
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\publish\x64\NotMess.dll
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\publish\x64\NotMess.deps.json
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\publish\x64\NotMess.runtimeconfig.json
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\publish\x64\NotMess.pdb

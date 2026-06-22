@@ -1,0 +1,14 @@
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\bin\Release\net8.0-windows\win-x86\NotMess.exe
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\bin\Release\net8.0-windows\win-x86\NotMess.deps.json
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\bin\Release\net8.0-windows\win-x86\NotMess.runtimeconfig.json
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\bin\Release\net8.0-windows\win-x86\NotMess.dll
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\bin\Release\net8.0-windows\win-x86\NotMess.pdb
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.AssemblyInfoInputs.cache
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.AssemblyInfo.cs
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.csproj.CoreCompileInputs.cache
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.dll
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\refint\NotMess.dll
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.pdb
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\NotMess.genruntimeconfig.cache
+C:\Users\notkovvik\Downloads\notmess2\NotMess-WebApp\windows\NotMess\obj\Release\net8.0-windows\win-x86\ref\NotMess.dll
