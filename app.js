@@ -4,7 +4,8 @@ const API_URL = window.location.origin;
 function setCookie(name, value, days = 365) {
     const d = new Date();
     d.setTime(d.getTime() + days * 864e5);
-    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    const secure = location.protocol === 'https:' ? ';Secure' : '';
+    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax' + secure;
 }
 function getCookie(name) {
     return document.cookie.split('; ').reduce((r, c) => {
