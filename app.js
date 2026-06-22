@@ -356,15 +356,22 @@ async function getUserByUsername(username) {
     return response.json();
 }
 async function getCurrentUser() {
-    const username = getCookie('currentUsername');
+    const username = getCookie('currentUsername') || localStorage.getItem('notmess_username');
     if (!username) return null;
+    const cached = localStorage.getItem('notmess_user');
     try {
         const user = await getUserByUsername(username);
-        if (user && user.username) return user;
-        return null;
-    } catch(e) {
-        return null;
+        if (user && user.username) {
+            localStorage.setItem('notmess_username', username);
+            localStorage.setItem('notmess_user', JSON.stringify(user));
+            return user;
+        }
+    } catch(e) {}
+    if (cached) {
+        try { return JSON.parse(cached); } catch(e) {}
     }
+    if (username) return { username, firstname: username };
+    return null;
 }
 async function getAllUsers() {
     const response = await fetch(`${API_URL}/api/users`);
@@ -570,6 +577,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const user = await getUserByUsername(tempUsername);
             if (user) {
                 setCookie('currentUsername', tempUsername);
+                localStorage.setItem('notmess_username', tempUsername);
                 authScreen.classList.add('hidden');
                 app.classList.remove('hidden');
                 const keys = await generateUserKeys();
@@ -739,6 +747,7 @@ if (manualSetupLink) {
             try {
                 await saveUser(userData);
                 setCookie('currentUsername', tempUsername);
+                localStorage.setItem('notmess_username', tempUsername);
                 deleteCookie('tempChatId');
             setupScreen.classList.add('hidden');
             app.classList.remove('hidden');
@@ -749,7 +758,7 @@ if (manualSetupLink) {
         }
         });
     }
-    const currentUser = await getCurrentUser();
+    let currentUser = await getCurrentUser();
     if (currentUser) {
         app.classList.remove('hidden');
         await createNewsChannel();
@@ -758,14 +767,28 @@ if (manualSetupLink) {
         initSearch();
         if (window.heartbeatInterval) clearInterval(window.heartbeatInterval);
         window.heartbeatInterval = setInterval(async () => {
-            const u = getCookie('currentUsername');
+            const u = getCookie('currentUsername') || localStorage.getItem('notmess_username');
             if (u) {
                 try { await fetch(`${API_URL}/api/users/heartbeat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username: u}) }); } catch(e) {}
             }
         }, 30000);
-        fetch(`${API_URL}/api/users/heartbeat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username: currentUser.username}) }).catch(() => {});
-    } else {
-        authScreen.classList.remove('hidden');
+        if (currentUser.username) fetch(`${API_URL}/api/users/heartbeat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username: currentUser.username}) }).catch(() => {});
+    }
+    if (!currentUser) {
+        const cached = localStorage.getItem('notmess_user');
+        const cachedUname = localStorage.getItem('notmess_username');
+        if (cached && cachedUname) {
+            try { currentUser = JSON.parse(cached); } catch(e) {}
+        }
+        if (currentUser) {
+            app.classList.remove('hidden');
+            await createNewsChannel();
+            await loadChatsAndUsers();
+            initFolderTabs();
+            initSearch();
+        } else {
+            authScreen.classList.remove('hidden');
+        }
     }
     console.log('Инициализация завершена');
 });
@@ -916,6 +939,8 @@ console.log('NotMess загружен успешно!');
         const ok = await showConfirm('Очистить устройства', 'Завершить все другие сеансы?');
         if (ok) {
             deleteCookie('currentUsername');
+            localStorage.removeItem('notmess_username');
+            localStorage.removeItem('notmess_user');
             deleteCookie('e2e_pubkey');
             document.getElementById('devices-modal').classList.add('hidden');
             showMessage('✅ Все сеансы завершены');
@@ -1045,6 +1070,8 @@ console.log('NotMess загружен успешно!');
             if (window.pollingInterval) clearInterval(window.pollingInterval);
             if (window.callPollInterval) clearInterval(window.callPollInterval);
             deleteCookie('currentUsername');
+            localStorage.removeItem('notmess_username');
+            localStorage.removeItem('notmess_user');
             location.reload();
         });
     }
@@ -1086,6 +1113,8 @@ console.log('NotMess загружен успешно!');
                         if (data.success) {
                             showAlert('Аккаунт удален', 'Ваш аккаунт и все данные удалены.');
                             deleteCookie('currentUsername');
+                            localStorage.removeItem('notmess_username');
+                            localStorage.removeItem('notmess_user');
                             setTimeout(() => location.reload(), 1500);
                         } else {
                             showAlert('Ошибка', data.error || 'Не удалось удалить аккаунт');
